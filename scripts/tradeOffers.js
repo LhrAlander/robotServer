@@ -42,6 +42,11 @@ function acceptTradeOffer(id, pid) {
   })
 }
 
+/**
+ *
+ * @param dealOffer
+ * @returns {Promise<unknown>}
+ */
 function dealTradeOffer(dealOffer) {
   return new Promise((gRes, gRej) => {
     let alreadyExist = TRADE_OFFERS_MAP[dealOffer.id]
@@ -81,7 +86,7 @@ function dealTradeOffer(dealOffer) {
             targetOffer.status = TradeOfferStatus.STARTED
             TRADE_OFFERS_MAP[dealOffer.id] = targetOffer
             console.log('accept')
-            acceptTradeOffer(dealOffer.id, dealOffer.pid)
+            acceptTradeOffer(targetOffer.id, targetOffer.pid)
               .then(res => {
                 console.log('accept trade offer end', res)
                 targetOffer.status = res.status

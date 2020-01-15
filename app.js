@@ -6,8 +6,14 @@ const logger = require('morgan')
 
 const indexRouter = require('./routes/index')
 
-const app = express()
+const {
+  checkPlayerDeliver,
+  checkWithDraw
+} = require('./scripts/worker/c5')
 
+const app = express()
+setInterval(checkPlayerDeliver, 10000)
+setInterval(checkWithDraw, 500)
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'jade')
