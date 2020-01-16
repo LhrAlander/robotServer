@@ -35,7 +35,6 @@ function patchConfirms(confirms) {
 }
 
 function confirmTrade(offer) {
-  console.log('confirm offer', offer)
   return new Promise((gRes, gRej) => {
     let already = findOfferFromCache(offer)
     if (!already) {
@@ -50,20 +49,27 @@ function confirmTrade(offer) {
               code: 'NONE_CONFIRMATION'
             })
           }
+          already.status = 'STARTED'
           return steamBot.acceptConfirm(already)
         })
         .then(res => {
-          console.log(res)
           gRes(res)
         })
         .catch(gRej)
     } else {
-      steamBot.acceptConfirm(already)
-        .then(res => {
-          console.log(res)
-          gRes(res)
+      if (already.status !== 'STARTED') {
+        steamBot.acceptConfirm(already)
+          .then(res => {
+            gRes(res)
+          })
+          .catch(gRej)
+      } else {
+        gRes({
+          success: false,
+          code: 'ALREADY_IN_QUEUE'
         })
-        .catch(gRej)
+      }
+
     }
   })
 }

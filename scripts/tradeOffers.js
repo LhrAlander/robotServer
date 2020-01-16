@@ -15,7 +15,7 @@ function patchTradeOfferQueue(newOffers) {
 }
 
 function isSameOffer(target, source) {
-  return target.partenerInfo.name === source.partenerInfo.name;
+  return target.partenerInfo.name === source.partenerInfo.name
 
 }
 
@@ -52,6 +52,7 @@ function dealTradeOffer(dealOffer) {
     let alreadyExist = TRADE_OFFERS_MAP[dealOffer.id]
     if (alreadyExist) {
       if (alreadyExist.status === TradeOfferStatus.UNSTARTED) {
+        alreadyExist.status.status = TradeOfferStatus.STARTED
         acceptTradeOffer(dealOffer.id, dealOffer.pid)
           .then(res => {
             alreadyExist.status = res.status
@@ -61,48 +62,51 @@ function dealTradeOffer(dealOffer) {
             })
           })
           .catch(gRej)
+      } else {
+        gRes({
+          success: true,
+          data: alreadyExist
+        })
       }
-    }
-
-    // 获取账号下交易报价信息
-    steamRobot
-      .getAllTradeOffers()
-      .then(tradeOffers => {
-        patchTradeOfferQueue(tradeOffers)
-        let targetOffer = tradeOffers.filter(_ => _.id === dealOffer.id)
-        if (!targetOffer.length) {
-          gRes({
-            success: false,
-            code: 'NONE_OFFER'
-          })
-        } else {
-          targetOffer = targetOffer[0]
-          if (!isSameOffer(targetOffer, dealOffer)) {
+    } else {
+      // 获取账号下交易报价信息
+      steamRobot
+        .getAllTradeOffers()
+        .then(tradeOffers => {
+          patchTradeOfferQueue(tradeOffers)
+          let targetOffer = tradeOffers.filter(_ => _.id === dealOffer.id)
+          if (!targetOffer.length) {
             gRes({
               success: false,
-              code: 'DIFF_OFFER'
+              code: 'NONE_OFFER'
             })
           } else {
-            targetOffer.status = TradeOfferStatus.STARTED
-            TRADE_OFFERS_MAP[dealOffer.id] = targetOffer
-            console.log('accept')
-            acceptTradeOffer(targetOffer.id, targetOffer.pid)
-              .then(res => {
-                console.log('accept trade offer end', res)
-                targetOffer.status = res.status
-                gRes({
-                  success: true,
-                  data: targetOffer
+            targetOffer = targetOffer[0]
+            if (!isSameOffer(targetOffer, dealOffer)) {
+              gRes({
+                success: false,
+                code: 'DIFF_OFFER'
+              })
+            } else {
+              targetOffer.status = TradeOfferStatus.STARTED
+              TRADE_OFFERS_MAP[dealOffer.id] = targetOffer
+              acceptTradeOffer(targetOffer.id, targetOffer.pid)
+                .then(res => {
+                  targetOffer.status = res.status
+                  gRes({
+                    success: true,
+                    data: targetOffer
+                  })
                 })
-              })
-              .catch(err => {
-                console.log(err)
-                gRej(err)
-              })
+                .catch(err => {
+                  console.log('accept trade offer err', err)
+                  gRej(err)
+                })
+            }
           }
-        }
-      })
-      .catch(gRej)
+        })
+        .catch(gRej)
+    }
   })
 }
 

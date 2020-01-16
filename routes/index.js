@@ -30,29 +30,37 @@ router.get('/', function (req, res, next) {
 router.post('/deal/trade', function (req, res, next) {
   const offerInfo = req.body.offerInfo
   offerInfo.id = offerInfo.id + ''
-  dealTradeOffer(offerInfo)
-    .then(_res => {
-      console.log(_res)
-      if (_res.success) {
-        if (_res.data.status === TradeOfferStatus.END) {
-          res.send('交易报价处理完成，无需确认')
-        } else {
-          console.log('go to confirm')
-          confirmTrade(_res.data)
-            .then(confirmRes => {
-              res.send(confirmRes)
-            })
-            .catch(err => {
-              res.send(err)
-            })
-        }
-      } else {
-        res.json(_res)
-      }
-    })
-    .catch(err => {
-      res.send(err)
-    })
+  // dealTradeOffer(offerInfo)
+  //   .then(_res => {
+  //     if (_res.success) {
+  //       if (_res.data.status === TradeOfferStatus.END) {
+  //         res.send('交易报价处理完成，无需确认')
+  //       } else if (_res.data.status === TradeOfferStatus.NEED_CONFIRM) {
+  //         console.log('need confirm')
+  //         confirmTrade(_res.data)
+  //           .then(confirmRes => {
+  //             if (confirmRes.success) {
+  //               console.log(`交易报价：${offerInfo.id}确认成功`, confirmRes)
+  //               res.json(confirmRes)
+  //             } else {
+  //               console.log(`交易报价：${offerInfo.id}确认异常`, confirmRes.code)
+  //               res.json(confirmRes)
+  //             }
+  //           })
+  //           .catch(err => {
+  //             res.json({success: false, err})
+  //             console.log(`交易报价：${offerInfo.id}确认失败`, err)
+  //           })
+  //       } else {
+  //         res.json(_res)
+  //       }
+  //     } else {
+  //       res.json(_res)
+  //     }
+  //   })
+  //   .catch(err => {
+  //     res.send(err)
+  //   })
 })
 
 /**

@@ -67,28 +67,35 @@ function checkSteamTrade() {
   c5Robot.getC5Robots()
     .then(tradeOffers => {
       if (tradeOffers.length) {
-        tradeOffers.forEach(tradeOffer => {
-          dealTradeOffer(tradeOffer)
+        tradeOffers.forEach(offerInfo => {
+          dealTradeOffer(offerInfo)
             .then(_res => {
               if (_res.success) {
                 if (_res.data.status === TradeOfferStatus.END) {
-                  console.log(`交易报价：${tradeOffer.id}处理完成，无需确认`)
-                } else {
-                  console.log('go to confirm')
+                  console.log('交易报价处理完成，无需确认', _res.data)
+                } else if (_res.data.status === TradeOfferStatus.NEED_CONFIRM) {
+                  console.log('need confirm')
                   confirmTrade(_res.data)
                     .then(confirmRes => {
-                      console.log(`交易报价：${tradeOffer.id}确认成功`, confirmRes)
+                      if (confirmRes.success) {
+                        console.log(`交易报价：${offerInfo.id}确认成功`, confirmRes)
+                      } else {
+                        console.log(`交易报价：${offerInfo.id}确认异常`, confirmRes.code)
+                      }
                     })
                     .catch(err => {
-                      console.log(`交易报价：${tradeOffer.id}确认失败`, err)
+                      res.json({success: false, err})
+                      console.log(`交易报价：${offerInfo.id}确认失败`, err)
                     })
+                } else {
+                  console.log(`交易报价：${offerInfo.id}已在队列中`)
                 }
               } else {
-                console.log(`处理交易报价：${tradeOffer.id}失败`, _res)
+                console.log(`交易报价：${offerInfo.id}异常`, _res)
               }
             })
             .catch(err => {
-              console.log(`交易${tradeOffer.id}报价失败`, err)
+              console.log(`交易报价：${offerInfo.id}处理出错`, err)
             })
         })
       }

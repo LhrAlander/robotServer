@@ -8,12 +8,14 @@ const indexRouter = require('./routes/index')
 
 const {
   checkPlayerDeliver,
-  checkWithDraw
+  checkWithDraw,
+  checkSteamTrade
 } = require('./scripts/worker/c5')
 
 const app = express()
 setInterval(checkPlayerDeliver, 10000)
-setInterval(checkWithDraw, 500)
+setInterval(checkWithDraw, 15000)
+setInterval(checkSteamTrade, 2000)
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'jade')
