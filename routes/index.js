@@ -22,46 +22,6 @@ router.get('/', function (req, res, next) {
   res.send('请输入对应指令')
 })
 
-/**
- * 处理交易报价
- * id,
- * partnerName,
- */
-router.post('/deal/trade', function (req, res, next) {
-  const offerInfo = req.body.offerInfo
-  offerInfo.id = offerInfo.id + ''
-  // dealTradeOffer(offerInfo)
-  //   .then(_res => {
-  //     if (_res.success) {
-  //       if (_res.data.status === TradeOfferStatus.END) {
-  //         res.send('交易报价处理完成，无需确认')
-  //       } else if (_res.data.status === TradeOfferStatus.NEED_CONFIRM) {
-  //         console.log('need confirm')
-  //         confirmTrade(_res.data)
-  //           .then(confirmRes => {
-  //             if (confirmRes.success) {
-  //               console.log(`交易报价：${offerInfo.id}确认成功`, confirmRes)
-  //               res.json(confirmRes)
-  //             } else {
-  //               console.log(`交易报价：${offerInfo.id}确认异常`, confirmRes.code)
-  //               res.json(confirmRes)
-  //             }
-  //           })
-  //           .catch(err => {
-  //             res.json({success: false, err})
-  //             console.log(`交易报价：${offerInfo.id}确认失败`, err)
-  //           })
-  //       } else {
-  //         res.json(_res)
-  //       }
-  //     } else {
-  //       res.json(_res)
-  //     }
-  //   })
-  //   .catch(err => {
-  //     res.send(err)
-  //   })
-})
 
 /**
  * 买饰品
@@ -95,7 +55,7 @@ router.post('/buy', function (req, res, next) {
       if (purchasePrice * 0.982 - manualPrice > 0) {
         type = MANUAL_BUY
         sellPrice = manualPrice
-      } else {
+      } else if (purchasePrice * 0.982 - quickPrice < 0) {
         return res.json({
           success: false,
           code: NO_PROFIT,
@@ -109,7 +69,7 @@ router.post('/buy', function (req, res, next) {
       buyGoods({
         platform,
         type,
-        detail,
+        detail: sellPlatform,
         info: type === QUICK_BUY ? sellPlatform.quick : sellPlatform.manual
       })
 

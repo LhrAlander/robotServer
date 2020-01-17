@@ -9,13 +9,27 @@ const indexRouter = require('./routes/index')
 const {
   checkPlayerDeliver,
   checkWithDraw,
-  checkSteamTrade
+  checkSteamTrade,
+  checkDeliver: c5Deliver,
+  checkPurchaseDeliver: c5PurchaseDeliver
 } = require('./scripts/worker/c5')
+
+const {
+  checkWithDraw: buffWithDraw,
+  checkSteamTrade: buffSteamTrade,
+  checkDeliver: buffDeliver
+} = require('./scripts/worker/buff')
 
 const app = express()
 setInterval(checkPlayerDeliver, 10000)
 setInterval(checkWithDraw, 15000)
-setInterval(checkSteamTrade, 2000)
+setInterval(buffWithDraw, 15000)
+setInterval(checkSteamTrade, 5000)
+setInterval(buffSteamTrade, 5000)
+setInterval(buffDeliver, 10000)
+setInterval(c5Deliver, 10000)
+setInterval(c5PurchaseDeliver, 10000)
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'jade')

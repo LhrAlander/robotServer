@@ -72,7 +72,7 @@ function checkSteamTrade() {
             .then(_res => {
               if (_res.success) {
                 if (_res.data.status === TradeOfferStatus.END) {
-                  console.log('交易报价处理完成，无需确认', _res.data)
+                  console.log(`交易报价：${offerInfo.id}处理完成，无需确认`)
                 } else if (_res.data.status === TradeOfferStatus.NEED_CONFIRM) {
                   console.log('need confirm')
                   confirmTrade(_res.data)
@@ -102,8 +102,18 @@ function checkSteamTrade() {
     })
 }
 
+function checkDeliver() {
+  c5Robot.deliver()
+}
+
+function checkPurchaseDeliver() {
+  c5Robot.purchaseDeliver()
+}
+
 module.exports = {
   checkPlayerDeliver,
   checkWithDraw,
-  checkSteamTrade
+  checkSteamTrade,
+  checkDeliver,
+  checkPurchaseDeliver
 }

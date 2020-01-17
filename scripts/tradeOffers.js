@@ -3,7 +3,6 @@ const TradeOfferStatus = require('../const/tradeOfferStatus')
 const {TRADE_OFFERS_MAP} = require('./assets')
 
 function patchTradeOfferQueue(newOffers) {
-  console.log(newOffers)
   for (let i = 0, l = newOffers.length; i < l; i++) {
     if (!TRADE_OFFERS_MAP[newOffers[i].id]) {
       TRADE_OFFERS_MAP[newOffers[i].id] = {
@@ -65,10 +64,11 @@ function dealTradeOffer(dealOffer) {
       } else {
         gRes({
           success: true,
-          data: alreadyExist
+          data: 'alreadyExist'
         })
       }
     } else {
+      TRADE_OFFERS_MAP[dealOffer.id] = { status: TradeOfferStatus.STARTED }
       // 获取账号下交易报价信息
       steamRobot
         .getAllTradeOffers()
